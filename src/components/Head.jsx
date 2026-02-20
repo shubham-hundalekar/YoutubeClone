@@ -9,11 +9,13 @@ const Head = () => {
     }
 
     return (
-        <div className='grid grid-flow-col p-3 shadow-lg'>
+        <div className='sticky top-0 z-50 grid w-full grid-flow-col p-3 bg-white shadow-lg justify-stretch'>
             <div className='flex col-span-1'>
                 <img className='w-10 cursor-pointer' onClick={()=>{toggleMenuHandler()}} 
                 alt='Menu' src='https://static.vecteezy.com/system/resources/previews/021/190/402/original/hamburger-menu-filled-icon-in-transparent-background-basic-app-and-web-ui-bold-line-icon-eps10-free-vector.jpg'/>
+                <a href='/'>
                 <img className='h-8 pt-2' src="https://luxafor.com/wp-content/uploads/2024/09/YouTube_logo_2017-min-600x135.png" alt="" />
+                </a>
             </div>
             <div className='flex grid-flow-col'>
                 <input type="text" placeholder='Search' className='w-3/4 px-3 border border-gray-400 rounded-l-full ' />

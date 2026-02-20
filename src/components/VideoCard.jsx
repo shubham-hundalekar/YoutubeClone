@@ -1,8 +1,7 @@
-import React from 'react'
+
 
 const VideoCard = ({info}) => {
     if(!info) return null;
-
     const {snippet, statistics} = info;
     const {channelTitle, thumbnails, title} = snippet;
     
@@ -18,5 +17,14 @@ const VideoCard = ({info}) => {
     </div>
   )
 }
+
+export const AdCard = ({info})=>{
+  return(
+    <div className="rounded-lg bg-slate-500">
+      <VideoCard info={info}/>
+    </div>
+  )
+}
+
 
 export default VideoCard;
