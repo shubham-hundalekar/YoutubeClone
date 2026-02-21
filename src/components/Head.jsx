@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toggleMenu } from '../utils/appSlice'
 import { YOUTUBE_SEARCH_API } from '../utils/constants';
+import { cacheResults } from '../utils/searchSlice';
 
 const Head = () => {
     //SearchQuery
@@ -10,18 +11,34 @@ const Head = () => {
     const [suggestions, setSuggestions] = useState([]);
     //ShowSuggestions : this makes the search disable when we are not searching
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const dispatch = useDispatch()
     const toggleMenuHandler = ()=>{
         dispatch(toggleMenu());
     }
-    //DeBouncing
+
+    //Subscribing to the store
+    const searchCache = useSelector(store=>store.search);
+/*
+    {
+        searchCache :{
+            'iphone":["iphone 11", "iphone 14", .....]
+        }
+    }
+*/
+
+    const dispatch = useDispatch();
+    //DeBouncing and Cache
     useEffect(()=>{
-        const timer = setTimeout(()=>{getSearchQuery()}, 200);
+        const timer = setTimeout(()=>{
+             if(searchCache[searchQuery]){
+                setSuggestions(searchCache[searchQuery])
+            }else{  
+                getSearchQuery()
+            }
+        }, 200);
         
         return()=>{
             clearTimeout(timer);
         }
-
     }, [searchQuery]);
 
     const getSearchQuery = async ()=>{
@@ -30,6 +47,11 @@ const Head = () => {
         const json = await data.json();
         console.log(json[1]);
         setSuggestions(json[1]);
+        
+        //Update cache
+        dispatch(cacheResults({
+            [searchQuery] : json[1]
+        }))
     }
 
     return (
@@ -71,4 +93,4 @@ const Head = () => {
     )
 }
 
-export default Head
+export default Head;
