@@ -3,10 +3,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toggleMenu } from '../utils/appSlice'
 import { YOUTUBE_SEARCH_API } from '../utils/constants';
 import { cacheResults } from '../utils/searchSlice';
+import { assignText } from '../utils/searchedText';
 
 const Head = () => {
+
+    const dispatch = useDispatch();
     //SearchQuery
     const [searchQuery, setSearchQuery] = useState("");
+    const [finalSearchValue, setFinalSearchValue] = useState(null);
     //Suggestions
     const [suggestions, setSuggestions] = useState([]);
     //ShowSuggestions : this makes the search disable when we are not searching
@@ -25,7 +29,6 @@ const Head = () => {
     }
 */
 
-    const dispatch = useDispatch();
     //DeBouncing and Cache
     useEffect(()=>{
         const timer = setTimeout(()=>{
@@ -42,10 +45,8 @@ const Head = () => {
     }, [searchQuery]);
 
     const getSearchQuery = async ()=>{
-        console.log(searchQuery);
         const data = await fetch(YOUTUBE_SEARCH_API+searchQuery);
         const json = await data.json();
-        console.log(json[1]);
         setSuggestions(json[1]);
         
         //Update cache
@@ -53,6 +54,12 @@ const Head = () => {
             [searchQuery] : json[1]
         }))
     }
+
+    
+        const getSearchedText = (s)=>{
+            console.log(searchQuery);
+            dispatch(assignText(searchQuery))
+        }
 
     return (
         
@@ -67,20 +74,30 @@ const Head = () => {
                 <div className='flex grid-flow-col'>
                     <div className=''>    
                         <input type="text" 
-                            placeholder='Search' 
+                            placeholder='🔍 Search' 
                             className='p-2 px-3 border border-gray-400 rounded-l-full w-[52rem] ' 
+
                             value={searchQuery}
+                            
                             onChange={(e)=>setSearchQuery(e.target.value)}
                             onFocus={()=>setShowSuggestions(true)}
                             onBlur={()=>setShowSuggestions(false)}
-                        />
-                        <button className='px-4 py-2 bg-gray-200 border border-gray-400 rounded-r-full'>🔍</button>    
+                            
+                        /> 
+                        <button className='px-4 py-2 bg-gray-200 border border-gray-400 rounded-r-full' onClick={getSearchedText}>🔍</button>    
                     
                     </div>
-                    <div className='fixed   mt-10 bg-white rounded-t-2xl rounded-b-md w-[52rem] shadow-lg'>
+                    <div className='fixed  z-50 mt-10 bg-white rounded-t-xl rounded-b-2xl w-[52rem] shadow-lg ' >
                         <ul>
                             {showSuggestions && (suggestions.map((s)=>(
-                                <li key={s} className='p-1 px-5 border-b-2 rounded-lg cursor-default hover:bg-gray-100 '>{s}</li>
+                                <div key={s}  className='mt-2 mb-2 rounded-t-2xl rounded-b-2xl'>
+                                    <li 
+                                        className='p-1 px-5 cursor-pointer hover:bg-gray-100 rounded-t-xl '>
+                                        <button 
+                                            onMouseDown={()=>setSearchQuery(s)}
+                                            className='w-full z-[10000] text-left '>🔍 {s}</button>
+                                    </li>
+                                </div>
                             )))}                            
                         </ul>
                     </div>
